@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root">
+        <div>
+            <div>
+                <p>{{ name }}-{{ message }}</p>
+            </div>
+        </div>
+        <p>{{ name }}</p>
+        <p>{{ message }}</p>
+    </div>
+    <script>
+        let rkuohao = /\{\{(.+?)\}\}/g;
+        // console.log(root);
+        // 步骤拆解
+        // 1. 拿到模板
+        // 2. 拿到数据(data)
+        // 3. 将数据和模板结合,得到的是html元素(DOM元素)
+        // 4. 放到页面中
+        let templateNode = document.querySelector('#root')
+        console.log(templateNode.childNodes);
+        // console.log(templateNode.childNodes[5].nodeValue);
+        // console.log(templateNode.nodeType);
+        let data = {
+            name: 'wuhuiluo',
+            message: '一个消息'
+        }
+        // console.log(data[wuhuiluo]);
+        function compiler(template, data) {
+            let childNodes = template.childNodes
+            for (let i = 0; i < childNodes.length; i++) {
+                let type = childNodes[i].nodeType
+                if (type === 3) {
+                    // 文本节点
+                    let txt = childNodes[i].nodeValue
+                    txt = txt.replace(rkuohao, (_, g) => {
+                        let key = g.trim()
+                        let value = data[key]
+                        return value
+                    })
+                    childNodes[i].nodeValue = txt
+                } else if (type === 1) {
+                    // 元素节点
+                    compiler(childNodes[i], data)
+                }
+            }
+        }
+        let generateNode = templateNode.cloneNode(true)
+        console.log(templateNode);
+        compiler(generateNode, data)
+        console.log(generateNode);
+        root.parentNode.replaceChild(generateNode, root)
+        // console.log(root.parentNode.replaceChild(generateNode, root));
+    </script>
+</body>
+
+</html>
